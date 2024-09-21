@@ -4,11 +4,11 @@ model_params: {
         name: "GaussianModel",
         kwargs: {}
     },
-    sh_degree: 3,
-    source_path: "/mnt/hdd/data/Citygaussian_data/colmap_results/rubble/train/sparse_undistorted/",
-    model_path: "",
+    sh_degree: 1,
+    source_path: "/mnt/hdd/data/Okutama_Action/GS_data/Scenario2/undistorted",  # adjust it to your own dataset
+    model_path: "",  # leave it blank
     images: "images",
-    resolution: 4,
+    resolution: -1,  # adjust it to your downsample factor. -1 means downsampling longest side of image to 1,600 pixels
     white_background: False,
     data_device: "cuda",
     eval: False,
@@ -23,6 +23,7 @@ pipeline_params: {
 
 
 # Optimization Parameters
+# Adjust the parameters according to your dataset
 optim_params: {
     iterations: 30_000,
     position_lr_init: 0.00016,

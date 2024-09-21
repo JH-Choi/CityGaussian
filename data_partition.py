@@ -16,22 +16,23 @@ from utils.large_utils import contract_to_unisphere, get_default_aabb
 from utils.loss_utils import ssim
 from utils.camera_utils import loadCam_woImage
 from arguments import GroupParams
+import pdb
 
 def block_partitioning(cameras, gaussians, args, pp, scale=1.0, quiet=False, disable_inblock=False, simple_selection=False):
 
         xyz_org = gaussians.get_xyz
         num_threshold = args.num_threshold
         block_num = args.block_dim[0] * args.block_dim[1] * args.block_dim[2]
-
         if args.aabb is None:
             torch.cuda.empty_cache()
             args.aabb = get_default_aabb(args, cameras, xyz_org, scale)
             config_name = os.path.splitext(os.path.basename(args.config))[0]
+            os.makedirs(os.path.join(args.source_path, "data_partitions"), exist_ok=True)
             np.save(os.path.join(args.source_path, "data_partitions", f"{config_name}_aabb.npy"), np.array(args.aabb.detach().cpu()))
         else:
             assert len(args.aabb) == 6, "Unknown args.aabb format!"
             args.aabb = torch.tensor(args.aabb, dtype=torch.float32, device=xyz_org.device)
-        
+
         print(f"Block number: {block_num}, Gaussian number threshold: {num_threshold}")
 
         camera_mask = torch.zeros((len(cameras), block_num), dtype=torch.bool, device=xyz_org.device)

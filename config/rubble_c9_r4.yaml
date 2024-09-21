@@ -5,13 +5,14 @@ model_params: {
         kwargs: {}
     },
     sh_degree: 3,
-    source_path: "data/mill19/rubble-pixsfm/train",
+    # source_path: "data/mill19/rubble-pixsfm/train",
+    source_path: "/mnt/hdd/data/Citygaussian_data/colmap_results/rubble/train/sparse_undistorted/",
     partition_name: "rubble_c9_r4",
     pretrain_path: "output/rubble_coarse/point_cloud/iteration_30000",
     model_path: "",
     images: "images",
     block_dim: [3, 1, 3],
-    aabb: [-50, -100, -135, 50, 300, -5],
+    # aabb: [-50, -100, -135, 50, 300, -5], # 49.76, 31.96, -96.87, 162.67, 106.72, 96.99
     ssim_threshold: 0.12,
     resolution: 4,
     white_background: False,

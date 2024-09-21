@@ -96,7 +96,10 @@ def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder):
 
         image_path = os.path.join(images_folder, os.path.basename(extr.name))
         image_name = os.path.basename(image_path).split(".")[0]
-        image = Image.open(image_path)
+        # image = Image.open(image_path)
+        image_fs = Image.open(image_path)
+        image = image_fs.copy()
+        image_fs.close()
 
         cam_info = CameraInfo(uid=uid, R=R, T=T, FovY=FovY, FovX=FovX, image=image,
                               image_path=image_path, image_name=image_name, width=width, height=height)
@@ -146,6 +149,17 @@ def readColmapSceneInfo(path, images, eval, llffhold=8, partition=None):
     cam_infos = sorted(cam_infos_unsorted.copy(), key = lambda x : x.image_name)
     nerf_normalization = getNerfppNorm(cam_infos)
 
+    if eval:
+        import math
+        # eval_image_num = max(math.ceil(0.05 * len(cam_infos)), 1)
+        # llffhold = max(len(cam_infos) // eval_image_num, llffhold)
+        llffhold = 50
+        train_cam_infos = [c for idx, c in enumerate(cam_infos) if idx % llffhold != 0]
+        test_cam_infos = [c for idx, c in enumerate(cam_infos) if idx % llffhold == 0]
+    else:
+        train_cam_infos = cam_infos
+        test_cam_infos = []
+    
     if partition is not None:
         filtered_cam_infos = []
         for i in range(partition.shape[0]):
@@ -153,17 +167,7 @@ def readColmapSceneInfo(path, images, eval, llffhold=8, partition=None):
                 filtered_cam_infos.append(cam_infos[i])
         cam_infos = filtered_cam_infos if len(filtered_cam_infos) >= 50 else []
         print(f"Filtered Cameras: {len(filtered_cam_infos)}. ")
-    
-    if eval:
-        import math
-        eval_image_num = max(math.ceil(0.05 * len(cam_infos)), 1)
-        llffhold = max(len(cam_infos) // eval_image_num, llffhold)
-        train_cam_infos = [c for idx, c in enumerate(cam_infos) if idx % llffhold != 0]
-        test_cam_infos = [c for idx, c in enumerate(cam_infos) if idx % llffhold == 0]
-    else:
-        train_cam_infos = cam_infos
-        test_cam_infos = []
-    
+   
     print(f"Train cameras: {len(train_cam_infos)}, Test cameras: {len(test_cam_infos)}")
 
     ply_path = os.path.join(path, "sparse/0/points3D.ply")
